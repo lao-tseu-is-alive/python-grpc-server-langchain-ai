@@ -1,0 +1,23 @@
+// The contract for our AI inference service.
+// This file defines the methods and message structures.
+syntax = "proto3";
+
+package inference;
+
+option go_package = "github.com/lao-tseu-is-alive/go-cloud-grpc-client-ai/inference"; // For Go client generation
+
+// The service definition.
+service Inferencer {
+  // A method to generate text using a large language model.
+  rpc GenerateText (GenerateRequest) returns (GenerateResponse) {}
+}
+
+// The request message containing the prompt.
+message GenerateRequest {
+  string prompt = 1;
+}
+
+// The response message containing the model's generated text.
+message GenerateResponse {
+  string generated_text = 1;
+}
