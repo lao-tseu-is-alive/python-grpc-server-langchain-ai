@@ -1,6 +1,7 @@
 # python-grpc-server-langchain-ai
 Python  gRPC Server with LangChain cloud native (Kubernetes-Ready)
 
+you can test with Go client here : https://github.com/lao-tseu-is-alive/go-cloud-grpc-client-ai
 
 ### Features
 
