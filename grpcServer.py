@@ -20,15 +20,15 @@ dotenv.load_dotenv()
 
 # --- Configuration ---
 # Fetch the API key from environment variables. This is crucial for security in Kubernetes.
-API_KEY = os.getenv("GOOGLE_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
-    raise ValueError("GOOGLE_API_KEY environment variable not set!")
+    raise ValueError("GEMINI_API_KEY environment variable not set!")
 
 # --- LangChain Model Initialization ---
 # Initialize the Gemini model from LangChain.
 # This object will be reused for all requests.
 try:
-    llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=API_KEY)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", google_api_key=API_KEY)
 except Exception as e:
     print(f"Failed to initialize LangChain model: {e}")
     # In a real app, you might want to exit or handle this more gracefully

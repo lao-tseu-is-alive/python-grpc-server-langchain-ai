@@ -2,8 +2,14 @@
 name = "python-grpc-server-langchain-ai"
 version = "0.1.0"
 description = "Add your description here"
-requires-python = ">=3.13"
+requires-python = "==3.11.*"
 dependencies = [
-    "grpcio>=1.75.1",
-    "grpcio-tools>=1.75.1",
+    "grpcio",
+    "grpcio-tools==1.62.0",
+    "protobuf==4.25.3",
+    "grpcio-health-checking",
+    "langchain",
+    "langchain-google-genai",
+    "python-dotenv",
+    "google-generativeai",
 ]

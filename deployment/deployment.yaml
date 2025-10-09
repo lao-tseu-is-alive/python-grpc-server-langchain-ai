@@ -1,0 +1,77 @@
+# This file contains the Kubernetes resources needed to deploy the gRPC server.
+
+# --- Service ---
+# The Service provides a stable network endpoint to access the pods.
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-inference-service
+  labels:
+    app: python-inference-server
+spec:
+  # Use ClusterIP as we will access it internally from the Go service
+  type: ClusterIP
+  selector:
+    app: python-inference-server
+  ports:
+    - protocol: TCP
+      port: 50051
+      targetPort: 50051
+      name: grpc
+
+---
+# --- Deployment ---
+# The Deployment manages the lifecycle of the application pods.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-inference-deployment
+  labels:
+    app: python-inference-server
+spec:
+  replicas: 2 # Start with two replicas for high availability
+  selector:
+    matchLabels:
+      app: python-inference-server
+  template:
+    metadata:
+      labels:
+        app: python-inference-server
+    spec:
+      containers:
+        - name: python-inference-container
+          # IMPORTANT: Replace this with the path to your own container image
+          image: your-docker-registry/python-langchain-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
+              name: grpc
+
+          # --- Configuration ---
+          # Mount the Google API key from a Kubernetes Secret. This is the secure way to handle credentials.
+          env:
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  # Ensure you have created a secret named 'google-api-key-secret'
+                  name: google-api-key-secret
+                  key: GOOGLE_API_KEY
+
+          # --- Health Probes ---
+          # Kubernetes uses these probes to check if the container is healthy.
+          # We use the standard `grpc-health-probe` tool.
+          livenessProbe:
+            exec:
+              command: ["/bin/grpc-health-probe", "-addr=:50051"]
+            initialDelaySeconds: 10 # Wait 10 seconds before first probe
+            periodSeconds: 15
+          readinessProbe:
+            exec:
+              command: ["/bin/grpc-health-probe", "-addr=:50051"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+      # --- Graceful Shutdown ---
+      # Set a termination grace period. This should be slightly longer than
+      # the grace period in your server's shutdown logic (30s in server.py).
+      terminationGracePeriodSeconds: 35
